@@ -6,6 +6,8 @@
 #include "GameFramework/Actor.h"
 #include "CodeTest.generated.h"
 
+
+
 UCLASS()
 class SHOOTING_API ACodeTest : public AActor
 {
@@ -50,15 +52,28 @@ public:
 
 	UFUNCTION(BlueprintPure) // 실행핀 없는 노드
 	void Swap(int32& num, int32& num2);
+
+	void Swap2(int32* aa, int32* bb);
 	UFUNCTION(BlueprintCallable) // 블루프린트에서 노드로 사용(실행핀있음)
 	FString StringAppender(FString nam, FString nam2);
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = CodeVarible)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = CodeVariable)
 	int age = 0;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = CodeVarible)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = CodeVariable)
 	float height = 0;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = CodeVarible)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = CodeVariable)
 	FString nation ="";
 	int32 result = 0;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = CodeVariable)
+	TArray<int32> NumArr = { 1,2,3,5,6,7 };
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = CodeVariable)
+	TMap<int32, float> intfloat;
+
+
+	
+	
+
 	
 
 };

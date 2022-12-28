@@ -2,6 +2,7 @@
 
 
 #include "CodeTest.h"
+//#include "CodeTest2.h"
 #pragma warning (disable: 4458) // c4458 경고 해제
 
 // Sets default values
@@ -96,6 +97,51 @@ void ACodeTest::BeginPlay()
 			UE_LOG(LogTemp, Warning, TEXT("%d * %d = %d"),i, j, i*j);
 		}
 	}
+
+	TArray<int32> ages;
+	ages = { 3, 4, 5 }; 
+	UE_LOG(LogTemp, Warning, TEXT("배열의 길이 %d"), ages.Num()); //배열 길이함수 Num()
+	for (int32 i = 0; i < ages.Num(); i++) {
+		UE_LOG(LogTemp, Warning, TEXT("%d"), ages[i]);
+	}
+	for (int32 i = 0; i < NumArr.Num(); i++) {
+		UE_LOG(LogTemp, Warning, TEXT("%d"), NumArr[i]);
+	}
+
+
+	TMap<FString, float> distances;
+	distances.Add("sss", 8.45f);
+	UE_LOG(LogTemp,Warning,TEXT("%f"), distances["sss"])
+		for (auto dist : distances) {// dist안에 키와 밸류 둘다 담겨있다
+			UE_LOG(LogTemp, Warning, TEXT("%s---%f"), *dist.Key, dist.Value);
+		}	
+
+	intfloat.Add(1, 1.1);
+	intfloat.Add(2, 2.2);
+	for (auto inf : intfloat) {
+		UE_LOG(LogTemp, Warning, TEXT("inf = %d---%f"), inf.Key, inf.Value);
+	}
+
+	int32 num5 = 1235;
+	int32* ptr = &num5; //포인터변수 선언
+	num5 = 22;
+	UE_LOG(LogTemp, Warning, TEXT("num5 == %d ptr == %d"),num5, *ptr);
+	*ptr = 66;
+	UE_LOG(LogTemp, Warning, TEXT("num5 == %d ptr == %d"), num5, *ptr);
+	UE_LOG(LogTemp, Warning, TEXT("*ptr == %d"),*ptr); //포인터변수가 참조하는주소의 값
+	UE_LOG(LogTemp, Warning, TEXT("ptr == %p"), ptr); //포인터변수가 참조하는주소
+	UE_LOG(LogTemp, Warning, TEXT("&ptr == %p"), &ptr); //포인터변수의 주소
+	UE_LOG(LogTemp, Warning, TEXT("&num5 == %p"), &num5);
+
+	int32 aaa = 32, bbb = 23;
+	UE_LOG(LogTemp, Warning, TEXT("befor :: aaa == %d, bbb == %d"), aaa, bbb);
+	Swap2(&aaa, &bbb);
+	UE_LOG(LogTemp, Warning, TEXT("after :: aaa == %d, bbb == %d"), aaa, bbb);
+
+	//CodeTest2->pt_number = 1111;
+	//UE_LOG(LogTemp, Warning, TEXT("%d"), CodeTest2->pt_number);
+
+	
 }
 
 // Called every frame
@@ -117,6 +163,12 @@ void ACodeTest::Swap(int32& num, int32& num2) {
 	int temp = num;
 	num = num2;
 	num2 = temp;
+}
+
+void ACodeTest::Swap2(int32* aa, int32* bb) {
+	int temp = *aa;
+	*aa = *bb;
+	*bb = temp;
 }
 
 int32 ACodeTest::Product(int32 num, int32 num2) {
