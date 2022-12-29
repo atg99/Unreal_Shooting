@@ -16,8 +16,13 @@ class SHOOTING_API UMainWidget : public UUserWidget
 	
 
 public:
+	//스코어 변수 선언
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MySetting|Score", meta=(BindWidget))
 	class UTextBlock* curScore;
 
+	UPROPERTY(EditAnywhere, Category = "MySetting|Score", meta = (BindWidget))
+	class UTextBlock* bestScore;
+
 	void PrintCurrentScore();
+	void PrintBestScore();
 };

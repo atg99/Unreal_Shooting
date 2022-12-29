@@ -75,8 +75,12 @@ void Abullet::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherA
 		enemy->Destroy();
 
 		//게임모드의 CurrentScore 추가한다 게임모드는 어떤 클레스에서든 바로 접근이 가능하다.
+
 		AGameModeBase* gm = UGameplayStatics::GetGameMode(this);
+		//AGameModeBase* gm = GetWorld()->GetAuthGameMode(); 두번째 방법
+
 		AMyShootingModeBase* myGM = Cast<AMyShootingModeBase>(gm);
+
 		myGM->AddScore(1);
 		UE_LOG(LogTemp, Warning, TEXT("Point: %d"), myGM->GetCurrentScore());
 

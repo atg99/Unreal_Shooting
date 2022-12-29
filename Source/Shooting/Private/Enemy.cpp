@@ -4,10 +4,11 @@
 #include "Enemy.h"
 #include "Components/BoxComponent.h"
 #include "Components/StaticMeshComponent.h"
-
+#include "TimerManager.h"
 #include "Kismet/GameplayStatics.h"
 #include "PlayerFlight.h"
 #include "EngineUtils.h"
+#include "MyShootingModeBase.h"
 
 // Sets default values 생성하기전 before spawn 
 AEnemy::AEnemy()
@@ -110,8 +111,14 @@ void AEnemy::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherAc
 
 	APlayerFlight* player = Cast<APlayerFlight>(OtherActor);
 	if (player != nullptr) {
-		//player->Destroy();
-		player->ReservationHitColor(0.2f);
+		player->Destroy();
+		//메뉴 위젯을 생성하는 함수를 실행한다
+		AMyShootingModeBase* gm = Cast<AMyShootingModeBase>(GetWorld()->GetAuthGameMode());
+		if (gm != nullptr) {
+			gm->ShowMenu();
+		}
+		//GetWorld()->GetTimerManager().SetTimer(,);
+		//player->ReservationHitColor(0.2f);
 
 		Destroy();
 	}
