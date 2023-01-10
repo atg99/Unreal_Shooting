@@ -10,6 +10,10 @@
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "Enemy.h"
+#include "EngineUtils.h"
+#include "MyShootingModeBase.h"
+#include "DrawDebugHelpers.h"
 
 
 
@@ -114,6 +118,15 @@ void APlayerFlight::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 
 	enhancedInputComponent->BindAction(ia_fire, ETriggerEvent::Triggered, this, &APlayerFlight::FireBullet);
 
+	enhancedInputComponent->BindAction(ia_fast, ETriggerEvent::Started, this, &APlayerFlight::Fast);
+	enhancedInputComponent->BindAction(ia_fast, ETriggerEvent::Completed, this, &APlayerFlight::Slow);
+
+	enhancedInputComponent->BindAction(ia_ULT, ETriggerEvent::Triggered, this, &APlayerFlight::ExplosionAll);
+	enhancedInputComponent->BindAction(ia_ULT, ETriggerEvent::Triggered, this, &APlayerFlight::CheckE);
+
+	//PlayerInputComponent->BindAction("fast", IE_Pressed, this, &APlayerFlight::Fast);
+	//PlayerInputComponent->BindAction("fast", IE_Released, this, &APlayerFlight::Slow);
+
 	//Horizontal Axis 입력에 함수를 연결한다.
 	//PlayerInputComponent->BindAxis("Horizontal", this, &APlayerFlight::HorizontalI);
 	//Vertical Axis 입력에 함수를 연결한다.
@@ -176,12 +189,119 @@ void APlayerFlight::FireBullet()
 {
 	//총알 스폰
 	//총알 플루프린트 변수
-	FVector spawnPosition = GetActorLocation() + GetActorUpVector() * 100.0f;
-	FRotator spawnRotation = FRotator(90.0f, 0, 0);
-	FActorSpawnParameters param;
-	param.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-	GetWorld()->SpawnActor<Abullet>(bulletFactory, spawnPosition, spawnRotation);
-	//총알 발사 효과음
-	UGameplayStatics::PlaySound2D(this, fireSound);
+	if (isTrap == false) {
+
+		float a = 0;
+		for (int i = 0; i < bulletCount; i++) {
+
+			float offset = -0.5 * (bulletCount - 1) * bulletSpacing;
+
+
+			FVector spawnPosition = GetActorLocation() + GetActorUpVector() * 100.0f+offset*GetActorRightVector()+(GetActorRightVector()*bulletSpacing*i);
+			FRotator spawnRotation = FRotator(90.0f, 0, 0);
+
+			FActorSpawnParameters param;
+			param.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+	
+			Abullet* bullet = GetWorld()->SpawnActor<Abullet>(bulletFactory, spawnPosition, spawnRotation);
+
+			//생성된 총알(bullet)을 bulletAngle 만큼 일정하게 회전시킨다
+
+			FRotator totalAngle = FRotator(0, 0, 0);
+			totalAngle = FRotator(0, -0.5 * ((bulletCount - 1) * angle), 0);
+
+			bullet->AddActorLocalRotation(totalAngle+FRotator(0, angle * i,0));
+
+			//총알 발사 효과음
+		/*	if (fireSound != nullptr && IsValid(fireSound))
+			{
+				UGameplayStatics::PlaySound2D(this, fireSound);
+				UE_LOG(LogTemp, Warning, TEXT("fire"));
+			}*/
+		}
+	}
+
+}
+
+void APlayerFlight::Fast()
+{
+	moveSpeed = moveSpeed * 2;
+	UE_LOG(LogTemp, Warning, TEXT("fast"));
+}
+
+void APlayerFlight::Slow()
+{
+	moveSpeed = moveSpeed * 0.5f;
+	UE_LOG(LogTemp, Warning, TEXT("slow"));
+}
+
+void APlayerFlight::ExplosionAll()
+{
+	//월드에서 에너미를 찾는다 Enemy.h와 #include "EngineUtils.h"
+	//TActorIterator를 이용ㅎ한방식
+	//for (TActorIterator<AEnemy> it(GetWorld()); it; ++it) {
+	//	target = *it;
+
+	//	if (target != nullptr) {
+
+	//		target->DestroyMySelf();
+	//	}
+	//}
+
+	// TArray<T> 배열을 이용한 방식
+	//AMyShootingModeBase* gm = Cast<AMyShootingModeBase>(GetWorld()->GetAuthGameMode());
+
+	//if (gm != nullptr) {
+
+	//	for (int32 i = 0; i < gm->enemies.Num(); i++) {
+
+	//		//Pending kill 상태 체크 IsValid pending kill 부유상태가 아닌 완전삭제
+	//		if (IsValid(gm->enemies[i])) {
+	//			gm->enemies[i]->DestroyMySelf();
+	//		}
+	//	}
+	//	//리스트를 초기화한다
+	//	gm->enemies.Empty();
+	//}
+
+	//3. 델리게이트를 실행한다
+	playerBomb.Broadcast();
+	newDir.Broadcast(FVector(0, 1.0f, 0));
+
+}
+
+void APlayerFlight::CheckE() {
+
+	TArray<FOverlapResult> enemiesInfo;
+
+	//엑터를 기준으로 700
+	FVector centerLoc = GetActorLocation() + GetActorUpVector() * 700;
+
+	//퀀트로 변환
+	FQuat centerRot = GetActorRotation().Quaternion();
+
+	FCollisionObjectQueryParams params = ECC_GameTraceChannel2;
+															//크기
+	FCollisionShape checkShape = FCollisionShape::MakeSphere(500);
+
+	//                                   넣을 배열     감지 범위	퀀트값		충돌체널	감지모양
+	GetWorld()->OverlapMultiByObjectType(enemiesInfo, centerLoc, centerRot, params, checkShape);
+
+	// 채널 감지
+	//GetWorld()->OverlapBlockingTestByProfile()
+
+
+	//체크된 모든 에너미의 이름을 출력한다 
+	for (FOverlapResult enemyinfo : enemiesInfo) {
+
+		UE_LOG(LogTemp, Warning, TEXT("Hited : %s"), *enemyinfo.GetActor()->GetName());
+
+		//충돌한 에너미를 가져온다
+		enemyinfo.GetActor()->Destroy();
+	}
+	
+	//콜리전 모양? 을 그린다				   크기,  부드러움, 색, 지속여부, 지속시간
+	DrawDebugSphere(GetWorld(), centerLoc, 500, 20, FColor::Yellow, false, 2);
+
 }
 

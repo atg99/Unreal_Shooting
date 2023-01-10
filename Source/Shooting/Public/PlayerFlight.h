@@ -8,6 +8,10 @@
 #include "InputActionValue.h"
 #include "PlayerFlight.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FULTbomb);
+// 1. 백터를 인자로 넘겨받는 델리게이트 선언
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FNewDir , FVector, vec);
+
 UCLASS()
 class SHOOTING_API APlayerFlight : public APawn
 {
@@ -44,9 +48,28 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = playerSettings)
 		class UInputAction* ia_fire;
 	UPROPERTY(EditDefaultsOnly, Category = playerSettings)
+		class UInputAction* ia_fast;
+	UPROPERTY(EditDefaultsOnly, Category = playerSettings)
+		class UInputAction* ia_ULT;
+	UPROPERTY(EditDefaultsOnly, Category = playerSettings)
 		class UInputMappingContext* imc_myMapping;
 	UPROPERTY(EditDefaultsOnly, Category = playerSettings)
 		class USoundBase* fireSound;
+
+	UPROPERTY(EditDefaultsOnly, Category = playerSettings)
+		int32 bulletCount = 2;
+
+	UPROPERTY(EditDefaultsOnly, Category = playerSettings)
+	float bulletSpacing = 150.0f;
+
+	UPROPERTY(EditDefaultsOnly, Category = playerSettings)
+	float angle = 30;
+
+	UPROPERTY(EditDefaultsOnly, Category = playerSettings)
+	bool isTrap = false;
+
+	UFUNCTION()
+	void ExplosionAll();
 
 
 
@@ -68,8 +91,14 @@ private:
 	UFUNCTION(BlueprintCallable)
 	void FireBullet();
 
+	UFUNCTION(BlueprintCallable)
+		void Fast();
+	UFUNCTION(BlueprintCallable)
+	void Slow();
+
 	float h;
 	float v;
+
 
 	FVector direction;
 	FLinearColor initColor;
@@ -77,6 +106,7 @@ private:
 	UMaterialInstanceDynamic* my_mat;
 	UMaterialInstanceDynamic* dynamicMat;
 
+	//class AEnemy* target;
 	
 
 public:
@@ -86,4 +116,9 @@ public:
 
 	void ReservationHitColor(float time);
 	void ChangeOriginColor();
+
+	void CheckE();
+
+	FULTbomb playerBomb;
+	FNewDir newDir;
 };

@@ -5,6 +5,7 @@
 #include "MainWidget.h"
 #include "MenuWidget.h"
 #include "Kismet/GameplayStatics.h"
+#include "BossActor.h"
 
 void AMyShootingModeBase::BeginPlay()
 {
@@ -37,6 +38,8 @@ void AMyShootingModeBase::BeginPlay()
 	UE_LOG(LogTemp, Warning, TEXT("test path %s"), *testpath);
 
 	GEngine->AddOnScreenDebugMessage(1, 3.0f, FColor::Red, TEXT("logTest"), true);
+
+
 }
 
 void AMyShootingModeBase::AddScore(int32 Count)
@@ -58,6 +61,15 @@ void AMyShootingModeBase::AddScore(int32 Count)
 
 		main_UI->PrintCurrentScore();
 
+	}
+
+	if (currentScore >= 30) {
+
+		GetWorld()->SpawnActor<ABossActor>(bossFactory, FVector((-940.0f, 120.0f, 2500.0f)), FRotator::ZeroRotator);
+
+		AActor* bossActor = UGameplayStatics::GetActorOfClass(GetWorld(), ABossActor::StaticClass());
+		ABossActor* boss = Cast<ABossActor>(bossActor);
+		boss->SpawnBoss();
 	}
 	
 }

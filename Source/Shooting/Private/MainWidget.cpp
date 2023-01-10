@@ -21,6 +21,8 @@ void UMainWidget::PrintCurrentScore()
 		FText bscoreTEXT = FText::AsNumber(myGM->GetBestScore());
 
 		bestScore->SetText(bscoreTEXT);
+		//scoreAnim을 실행한다    0초부터 1회반복 앞에서부터 실행, 1배속
+		//PlayAnimation(scoreAnim, 0, 1, EUMGSequencePlayMode::Forward, 1);
 	}
 
 

@@ -35,6 +35,9 @@ public:
 	UPROPERTY(EditInstanceOnly, Category = PoolSettiongs)
 	class USceneComponent* rootScene;
 
+	UPROPERTY(EditAnywhere, Category = PoolSettiongs)
+	bool canSpawn= true;
+
 
 
 private:

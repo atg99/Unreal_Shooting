@@ -35,11 +35,15 @@ void AEnemySpawningPool::Tick(float DeltaTime)
 	currentTime += DeltaTime;
 
 	//만일, 누적된 시간이 spawnCool에 지정한 시간보다 크거나 같다면
-	if (currentTime >= spawnCool) {
-		//에너미 블루프린트를 생성한다.
-		GetWorld()->SpawnActor<AEnemy>(enemyFactory, spawnArrow->GetComponentLocation(), spawnArrow->GetComponentRotation());
-		//누적된 currentTime을 초기화 한다.
-		currentTime = 0;
+	if (canSpawn == true) {
+
+		if (currentTime >= spawnCool) {
+			//에너미 블루프린트를 생성한다.
+			GetWorld()->SpawnActor<AEnemy>(enemyFactory, spawnArrow->GetComponentLocation(), spawnArrow->GetComponentRotation());
+			//누적된 currentTime을 초기화 한다.
+			currentTime = 0;
+		}
+
 	}
 
 

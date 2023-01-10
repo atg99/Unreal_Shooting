@@ -35,8 +35,7 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = BulletSettings)
 	class UParticleSystem* Explosion_effect;
 	//델리게이트로만든 함수느느 UFUNTioN으로 설정
-	UFUNCTION()
-	void OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	
 
 private:
 	FVector direction;

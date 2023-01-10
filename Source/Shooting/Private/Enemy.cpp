@@ -55,19 +55,27 @@ void AEnemy::BeginPlay()
 	INT32 drawNumber = FMath::RandRange(1, 100);
 	//2.만일, 0 < rand <= traceRate , 
 	//2-1 플레이어의 위치 - 나의 위치 = 플레이어로 가는 위치 
+	for (TActorIterator<APlayerFlight> it(GetWorld()); it; ++it) {
+		target = *it;
+	}
+	target->newDir.AddDynamic(this, &AEnemy::SetNewDirection);
+	target->newDir.AddDynamic(this, &AEnemy::SetNewDirection2);
+
 	if (drawNumber <= traceRate) {
 		//플레이어 액터를 찾는다.
 		// 월드에서 특정한 객체를 찾는 방법 1
 		//이터레이터형식의 배열에 모든 엑터를 넣는다; 하나씩 꺼냈을 때 널값이 아니라면 it != unll ; 배열에서 하나씩 뽑는다
 		//APlayerFlight* target;
-		for (TActorIterator<APlayerFlight> it(GetWorld()); it; ++it) {
-			target = *it;
-		}
+		
 		if (target != nullptr) {
 			float temp = target->moveSpeed;
 			FVector targetDir = target->GetActorLocation() - GetActorLocation();
 			direction = targetDir;
 			direction.Normalize();
+
+			//델리게이트 
+			target->playerBomb.AddDynamic(this, &AEnemy::DestroyMySelf);
+
 		}
 
 		//월드에서 특정한 객체를 찾는 방법 2
@@ -88,8 +96,11 @@ void AEnemy::BeginPlay()
 	
 
 
-
-
+	//게임모드에 있는 enemies 배열에 자기 포인터를 가리킨다
+	/*AMyShootingModeBase* gm = Cast<AMyShootingModeBase>(GetWorld()-> GetAuthGameMode());
+	if (gm != nullptr) {
+		gm->enemies.Add(this);
+	}*/
 
 
 	
@@ -122,6 +133,34 @@ void AEnemy::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherAc
 
 		Destroy();
 	}
+
+}
+
+void AEnemy::DestroyMySelf()
+{
+	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), Explosion_fx, GetActorLocation(), GetActorRotation());
+	Destroy();
+}
+
+void AEnemy::EndPlay(const EEndPlayReason::Type EEndPlayReason)
+{
+	/*AMyShootingModeBase* gm = Cast<AMyShootingModeBase>(GetWorld()->GetAuthGameMode());
+	if (gm != nullptr) {
+		gm->enemies.Remove(this);
+	}*/
+
+	target->playerBomb.RemoveDynamic(this, &AEnemy::DestroyMySelf);
+}
+
+void AEnemy::SetNewDirection(FVector evec)
+{
+	//이동 방향을 newdir로 바꾼다
+	direction = evec;
+
+}
+
+void AEnemy::SetNewDirection2(FVector evec)
+{
 
 }
 

@@ -35,8 +35,22 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = BulletSettings)
 		int32 traceRate = 30;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = EnemySettings)
+		class UParticleSystem* Explosion_fx;
+
 	UFUNCTION()
 	void OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+	UFUNCTION()
+	void DestroyMySelf();
+
+	virtual void EndPlay(const EEndPlayReason::Type EEndPlayReason) override;
+
+	UFUNCTION()
+	void SetNewDirection(FVector evec);
+
+	UFUNCTION()
+		void SetNewDirection2(FVector evec);
 
 private:
 	FVector direction;

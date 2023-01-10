@@ -28,7 +28,15 @@ public:
 	UPROPERTY(EditAnywhere, Category = MyDefaultSetting)
 		TSubclassOf<class UMenuWidget> menuWidget;
 
+	UPROPERTY(EditAnywhere, Category = MyDefaultSetting)
+		TSubclassOf<class ABossActor> bossFactory;
+
+	UPROPERTY(EditAnywhere, Category = MyDefaultSetting)
+	TArray<class AEnemy*> enemies;
+
 	virtual void BeginPlay() override;
+
+
 
 	void AddScore(int32 Count);
 
@@ -38,7 +46,7 @@ private:
 	
 	//UPROPERTY(BlueprintReadWrite)
 	//스코어 선언
-	int32 currentScore = 0;
+	int32 currentScore = 29;
 
 	int32 bestScore = 0;
 	class UMainWidget* main_UI;
